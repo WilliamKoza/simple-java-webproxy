@@ -53,9 +53,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -288,7 +289,7 @@ public class Noodle
      */
     public static final byte[] postToByteArray( HttpServletRequest req )
     {
-        Vector nvars = new Vector();
+        List<NVPair> nvars = new ArrayList<NVPair>();
         // loop over all the parameters
         for ( Enumeration e = req.getParameterNames(); e.hasMoreElements(); )
         {
@@ -299,22 +300,28 @@ public class Noodle
                 // deal with multiple's
                 for ( int k = 0; k < value.length; k++ )
                 {
-                    nvars.addElement( new NVPair( name, value[k] ) );
+                    nvars.add( new NVPair( name, value[k] ) );
                 }
             }
             else
             {
-                nvars.addElement( new NVPair( name, value[0] ) );
+                nvars.add( new NVPair( name, value[0] ) );
             }
         }
+        
+        
+        NVPair[] yep = nvars.toArray( new NVPair[nvars.size()] );
+        /*
         NVPair[] yep = new NVPair[nvars.size()];
+        
         int cnt = 0;
         // create the NVPair
-        for ( Enumeration e = nvars.elements(); e.hasMoreElements(); )
+        for ( NVPair nvPair : nvars )
         {
-            yep[cnt] = (NVPair) e.nextElement();
+            yep[cnt] = nvPair;
             cnt++;
         }
+        */
         // take advantage of code already done
         return Codecs.nv2query( yep ).getBytes();
     }

@@ -434,7 +434,9 @@ public class ParameterParser
         {
             Object object = this.get( convert( name ) );
             if ( object != null )
+            {
                 value = Long.valueOf( ( (String[]) object )[0] ).longValue();
+            }
         }
         catch ( NumberFormatException exception )
         {
@@ -452,7 +454,9 @@ public class ParameterParser
             String value = null;
             Object object = this.get( convert( name ) );
             if ( object != null )
+            {
                 value = ( (String[]) object )[0];
+            }
             return value;
         }
         catch ( ClassCastException e )
@@ -468,9 +472,13 @@ public class ParameterParser
     {
         String value = getString( name );
         if ( value == null || value.length() == 0 || value.equals( "null" ) )
+        {
             return defaultValue;
+        }
         else
+        {
             return value;
+        }
     }
 
     /**
@@ -481,7 +489,9 @@ public class ParameterParser
         String[] value = null;
         Object object = this.get( convert( name ) );
         if ( object != null )
+        {
             value = ( (String[]) object );
+        }
         return value;
     }
 
@@ -493,9 +503,10 @@ public class ParameterParser
     {
         String[] value = getStrings( name );
         if ( value == null || value.length == 0 )
+        {
             return defaultValue;
-        else
-            return value;
+        }
+        return value;
     }
 
     /**
@@ -506,7 +517,9 @@ public class ParameterParser
     {
         String tempStr = getString( name );
         if ( tempStr != null )
+        {
             return tempStr.getBytes( req.getCharacterEncoding() );
+        }
         return null;
     }
 

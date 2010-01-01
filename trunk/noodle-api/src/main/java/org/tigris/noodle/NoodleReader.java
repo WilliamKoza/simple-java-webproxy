@@ -46,19 +46,6 @@
 
 package org.tigris.noodle;
 
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import java.util.*;
-import java.net.*;
-
-// Java Servlet Classes
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import HTTPClient.*;
 
 /**
  * NoodleReader is an interface which provides for an object which 
@@ -74,13 +61,14 @@ import HTTPClient.*;
 public interface NoodleReader
 {
     /**
-     * Ask if there is another block to be read.  Note that this may include
-     * retrieving it into local storage in some situations.
+     * Ask if there is another block to be read. Note that this may include retrieving it into local
+     * storage in some situations.
      */
     public boolean readComplete();
 
     /**
      * Retrieve the next block
      */
-    public ResponseBlock doRead() throws NoodleException;
+    public ResponseBlock doRead()
+        throws NoodleException;
 }

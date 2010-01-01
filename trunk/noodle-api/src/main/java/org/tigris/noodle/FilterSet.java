@@ -45,7 +45,12 @@
  */ 
 package org.tigris.noodle;
 
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Properties;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * This class is responsible for loading a set of NoodleFilters from a
@@ -55,12 +60,11 @@ import java.util.*;
  * @author <a href="mailto:leonardr@collab.net">Leonard Richardson</a> 
  */
 public final class FilterSet
-{    
+{
     /**
      * Prefix to load errors.
      */
-    private static final String COULDNT_INITIALIZE_PREFIX = 
-        "Couldn't initialize filter class: ";
+    private static final String COULDNT_INITIALIZE_PREFIX = "Couldn't initialize filter class: ";
 
     /**
      * Prefix designating a proxy request filter.
@@ -70,19 +74,15 @@ public final class FilterSet
     /**
      * Prefix designating a proxy response filter.
      */
-    private static final String PROXY_RESPONSE_FILTER_PREFIX =
-        "filter.response";
+    private static final String PROXY_RESPONSE_FILTER_PREFIX = "filter.response";
 
     /**
-     * Prefix designating a proxy response finalizer filter (to be run
-     * on the last block of data). 
+     * Prefix designating a proxy response finalizer filter (to be run on the last block of data).
      */
-    private static final String PROXY_RESPONSE_FINALIZER_FILTER_PREFIX =
-        "filter.response.finalizer";
+    private static final String PROXY_RESPONSE_FINALIZER_FILTER_PREFIX = "filter.response.finalizer";
 
-    /** 
-     * Instances of this class, keyed by the properties used to initialize
-     * them. 
+    /**
+     * Instances of this class, keyed by the properties used to initialize them.
      */
     private static Map instances = new Hashtable();
 
@@ -91,61 +91,60 @@ public final class FilterSet
      */
     private Map filterOrdinals;
 
-    /** 
-     * A sorted map of ordinals mapped to the NoodleFilter objects
-     * corresponding to proxy request filters.
+    /**
+     * A sorted map of ordinals mapped to the NoodleFilter objects corresponding to proxy request
+     * filters.
      */
     private SortedMap proxyRequestFilters;
 
-    /** 
-     * A sorted map of ordinals mapped to the NoodleFilter objects
-     * corresponding to proxy response filters.
+    /**
+     * A sorted map of ordinals mapped to the NoodleFilter objects corresponding to proxy response
+     * filters.
      */
     private SortedMap proxyResponseFilters;
 
-    /** 
-     * A sorted map of ordinals mapped to the NoodleFilter objects
-     * corresponding to proxy response finalizer filters.
+    /**
+     * A sorted map of ordinals mapped to the NoodleFilter objects corresponding to proxy response
+     * finalizer filters.
      */
     private SortedMap proxyResponseFinalizerFilters;
-    
+
     /**
-     * This constructor is private to force clients to use getInstance()
-     * to access this class.
+     * This constructor is private to force clients to use getInstance() to access this class.
      */
-    private FilterSet(Properties properties)
+    private FilterSet( Properties properties )
     {
         filterOrdinals = new Hashtable();
         proxyRequestFilters = new TreeMap();
         proxyResponseFilters = new TreeMap();
         proxyResponseFinalizerFilters = new TreeMap();
-        fillFilterCache(properties);
+        fillFilterCache( properties );
     }
-        
+
     /**
      * The method through which instances of this class are accessed.
-     *
+     * 
      * @return The single instance of this class.
      */
-    public static final FilterSet getInstance(Properties properties)
+    public static final FilterSet getInstance( Properties properties )
     {
-        FilterSet instance = (FilterSet)instances.get(properties);
-        if (instance == null)
+        FilterSet instance = (FilterSet) instances.get( properties );
+        if ( instance == null )
         {
-            instance = new FilterSet(properties);
-            instances.put(properties, instance);
+            instance = new FilterSet( properties );
+            instances.put( properties, instance );
         }
         return instance;
     }
 
-    public Integer getOrdinal(NoodleFilter filter)
+    public Integer getOrdinal( NoodleFilter filter )
     {
-        Integer ordinal = (Integer)filterOrdinals.get(filter);
+        Integer ordinal = (Integer) filterOrdinals.get( filter );
         return ordinal;
     }
 
     /**
-     * Returns the request filters. 
+     * Returns the request filters.
      */
     public SortedMap getProxyRequestFilters()
     {
@@ -153,7 +152,7 @@ public final class FilterSet
     }
 
     /**
-     * Returns the response filters. 
+     * Returns the response filters.
      */
     public SortedMap getProxyResponseFilters()
     {
@@ -161,7 +160,7 @@ public final class FilterSet
     }
 
     /**
-     * Returns the response finalizer filters. 
+     * Returns the response finalizer filters.
      */
     public SortedMap getProxyResponseFinalizerFilters()
     {
@@ -169,101 +168,93 @@ public final class FilterSet
     }
 
     /**
-     * Not the most efficient, but it works and is only executed during
-     * initialization.
+     * Not the most efficient, but it works and is only executed during initialization.
      */
-    private void fillFilterCache(Properties properties)
+    private void fillFilterCache( Properties properties )
     {
         Hashtable rawData = new Hashtable();
-        for (Enumeration e = properties.propertyNames(); e.hasMoreElements();)
+        for ( Enumeration e = properties.propertyNames(); e.hasMoreElements(); )
         {
             Map relevantMap = null;
             String filterName = (String) e.nextElement();
-            if (filterName.startsWith(PROXY_REQUEST_FILTER_PREFIX))
+            if ( filterName.startsWith( PROXY_REQUEST_FILTER_PREFIX ) )
             {
-                relevantMap = proxyRequestFilters;                
+                relevantMap = proxyRequestFilters;
             }
-            else if (filterName.startsWith
-                     (PROXY_RESPONSE_FINALIZER_FILTER_PREFIX))
+            else if ( filterName.startsWith( PROXY_RESPONSE_FINALIZER_FILTER_PREFIX ) )
             {
                 relevantMap = proxyResponseFinalizerFilters;
             }
-            else if (filterName.startsWith(PROXY_RESPONSE_FILTER_PREFIX))
+            else if ( filterName.startsWith( PROXY_RESPONSE_FILTER_PREFIX ) )
             {
                 relevantMap = proxyResponseFilters;
             }
-            if (relevantMap != null)
+            if ( relevantMap != null )
             {
-                Integer i = getNumber(filterName);
-                String className = properties.getProperty(filterName);
+                Integer i = getNumber( filterName );
+                String className = properties.getProperty( filterName );
                 Class filterClass = null;
-                try 
+                try
                 {
-                    filterClass = Class.forName(className);
+                    filterClass = Class.forName( className );
                 }
-                catch (ClassNotFoundException ex)
+                catch ( ClassNotFoundException ex )
                 {
-                    System.err.println(COULDNT_INITIALIZE_PREFIX 
-                                       + className + " doesn't exist!");
+                    System.err.println( COULDNT_INITIALIZE_PREFIX + className + " doesn't exist!" );
                 }
 
                 NoodleFilter filter = null;
-                if (filterClass != null)
+                if ( filterClass != null )
                 {
-                    try 
+                    try
                     {
-                        filter = (NoodleFilter)filterClass.newInstance();
+                        filter = (NoodleFilter) filterClass.newInstance();
                     }
-                    catch (Exception ex)
+                    catch ( Exception ex )
                     {
-                        System.err.println
-                            (COULDNT_INITIALIZE_PREFIX
-                             + className + " couldn't be instantiated: " 
-                             + ex.getMessage());
+                        System.err.println( COULDNT_INITIALIZE_PREFIX + className + " couldn't be instantiated: "
+                            + ex.getMessage() );
                     }
                 }
 
-                if (filter != null)
+                if ( filter != null )
                 {
                     boolean ok = true;
-                    if (relevantMap == proxyRequestFilters)
+                    if ( relevantMap == proxyRequestFilters )
                     {
-                        if (!(filter instanceof NoodleRequestFilter))
+                        if ( !( filter instanceof NoodleRequestFilter ) )
                         {
 
                             ok = false;
-                            System.err.println
-                                (COULDNT_INITIALIZE_PREFIX
-                                 + className 
-                                 + " doesn't implement NoodleRequestFilter!");
+                            System.err.println( COULDNT_INITIALIZE_PREFIX + className
+                                + " doesn't implement NoodleRequestFilter!" );
                         }
                     }
-                    else if (!(filter instanceof NoodleResponseFilter))
-                    {                  
+                    else if ( !( filter instanceof NoodleResponseFilter ) )
+                    {
                         ok = false;
-                        System.err.println
-                            (COULDNT_INITIALIZE_PREFIX + className 
-                             + " doesn't implement NoodleResponseFilter!");
+                        System.err.println( COULDNT_INITIALIZE_PREFIX + className
+                            + " doesn't implement NoodleResponseFilter!" );
                     }
 
-                    if (ok)
+                    if ( ok )
                     {
-                        relevantMap.put(i, filter);
-                        filterOrdinals.put(filter, i);
+                        relevantMap.put( i, filter );
+                        filterOrdinals.put( filter, i );
                     }
                 }
             }
         }
     }
-    
+
     /**
      * INPUT: filter.request.1
      * <p>
      * OUTPUT: 1
      */
-    private static final Integer getNumber(String prop)
+    private static final Integer getNumber( String prop )
     {
-        String name = (prop.substring(prop.lastIndexOf(".")+1, prop.length()));
-        return new Integer(Integer.parseInt(name));
+        String name = ( prop.substring( prop.lastIndexOf( "." ) + 1, prop.length() ) );
+        return new Integer( Integer.parseInt( name ) );
     }
-}    
+}

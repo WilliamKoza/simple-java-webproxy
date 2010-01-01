@@ -77,10 +77,9 @@ public class ResponseBlock
     protected String encoding;
 
     /**
-     * Constructor.  
+     * Constructor.
      */
-    public ResponseBlock(byte [] block, int offset, int endOffset,
-                         String encoding)
+    public ResponseBlock( byte[] block, int offset, int endOffset, String encoding )
         throws NoodleException
     {
         this.block = block;
@@ -93,7 +92,8 @@ public class ResponseBlock
     /**
      * Verify that the bounds are reasonable.
      */
-    public void verifyBounds() throws NoodleException
+    public void verifyBounds()
+        throws NoodleException
     {
         // offset can't be larger than the block length (offset is inclusive
         // as the start location; offset == block.length means no more data
@@ -103,50 +103,47 @@ public class ResponseBlock
         //
         // offset can't be larger than endOffset
         //
-        if (offset > block.length || endOffset > block.length ||
-            endOffset < offset)
+        if ( offset > block.length || endOffset > block.length || endOffset < offset )
         {
-            throw new NoodleException("invalid offset / endOffset / "+
-                                      "block.length: " + offset + " / " +
-                                      endOffset + " / " + block.length);
+            throw new NoodleException( "invalid offset / endOffset / " + "block.length: " + offset + " / " + endOffset
+                + " / " + block.length );
         }
     }
 
-    public void setOffset(int newOffset)
+    public void setOffset( int newOffset )
         throws NoodleException
     {
-        changeData(block, newOffset, endOffset, encoding);
+        changeData( block, newOffset, endOffset, encoding );
     }
 
-    public void setBlock(byte[] newBlock)
+    public void setBlock( byte[] newBlock )
         throws NoodleException
     {
-        changeData(newBlock, offset, endOffset, encoding);
+        changeData( newBlock, offset, endOffset, encoding );
     }
 
-    public void setEndOffset(int newEndOffset)
+    public void setEndOffset( int newEndOffset )
         throws NoodleException
     {
-        changeData(block, offset, newEndOffset, encoding);
+        changeData( block, offset, newEndOffset, encoding );
     }
 
-    public void setOffset(String newEncoding)
+    public void setOffset( String newEncoding )
         throws NoodleException
     {
-        changeData(block, offset, endOffset, newEncoding);
+        changeData( block, offset, endOffset, newEncoding );
     }
 
-    public void changeData(byte[] block, int offset, int endOffset,
-                           String encoding)
+    public void changeData( byte[] block, int offset, int endOffset, String encoding )
         throws NoodleException
     {
-        if (block != null)
+        if ( block != null )
             this.block = block;
-        if (offset != -1)
+        if ( offset != -1 )
             this.offset = offset;
-        if (endOffset != -1)
+        if ( endOffset != -1 )
             this.endOffset = endOffset;
-        if (encoding != null)
+        if ( encoding != null )
             this.encoding = encoding;
         verifyBounds();
     }
@@ -174,11 +171,10 @@ public class ResponseBlock
     {
         return endOffset;
     }
-    
+
     /**
-     * return the encoding of the data, if the bytes represent a set of
-     * characters.  null will be returned when the bytes should not be
-     * handled as characters.
+     * return the encoding of the data, if the bytes represent a set of characters. null will be
+     * returned when the bytes should not be handled as characters.
      */
     public String getEncoding()
     {

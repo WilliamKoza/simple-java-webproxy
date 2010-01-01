@@ -45,20 +45,20 @@
  */
 package org.tigris.noodle;
 
-import org.tigris.noodle.NoodleFilter;
 
 /**
  * A hook for code to be run before the proxy request is sent out.
  * @author <a href="mailto:leonardr@collab.net">Leonard Richardson</a>
  */
-public interface NoodleRequestFilter extends NoodleFilter
+public interface NoodleRequestFilter
+    extends NoodleFilter
 {
     /**
      * Hook called once before sending out the request to the proxy.
-     *
-     * @param noodleData Contains miscellaneous storage and
-     *                   information about the request; you can also use
-     *                   this to mantain filter state.  
+     * 
+     * @param noodleData Contains miscellaneous storage and information about the request; you can
+     *            also use this to mantain filter state.
      */
-    void filter(NoodleData noodleData) throws Exception;
+    void filter( NoodleData noodleData )
+        throws Exception;
 }

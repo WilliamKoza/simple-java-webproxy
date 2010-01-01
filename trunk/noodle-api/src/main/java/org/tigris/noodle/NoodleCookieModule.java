@@ -46,8 +46,12 @@
 
 package org.tigris.noodle;
 
-import java.io.*;
-import HTTPClient.*;
+import java.io.IOException;
+
+import HTTPClient.HTTPClientModule;
+import HTTPClient.Request;
+import HTTPClient.Response;
+import HTTPClient.RoRequest;
 
 /**
  * This class overrides the default behavior of HTTPClient.CookieModule
@@ -57,28 +61,29 @@ import HTTPClient.*;
  *
  * @author <a href="mailto:jon@collab.net">Jon S. Stevens</a>
  */
-public class NoodleCookieModule implements HTTPClientModule
+public class NoodleCookieModule
+    implements HTTPClientModule
 {
-    public int requestHandler(Request req, Response[] resp)
+    public int requestHandler( Request req, Response[] resp )
     {
         return REQ_CONTINUE;
     }
 
-    public void responsePhase1Handler(Response resp, RoRequest req)
-	    throws IOException
+    public void responsePhase1Handler( Response resp, RoRequest req )
+        throws IOException
     {
     }
 
-    public int responsePhase2Handler(Response resp, Request req)
+    public int responsePhase2Handler( Response resp, Request req )
     {
         return RSP_CONTINUE;
     }
 
-    public void responsePhase3Handler(Response resp, RoRequest req)
+    public void responsePhase3Handler( Response resp, RoRequest req )
     {
     }
 
-    public void trailerHandler(Response resp, RoRequest req)
+    public void trailerHandler( Response resp, RoRequest req )
         throws IOException
     {
     }

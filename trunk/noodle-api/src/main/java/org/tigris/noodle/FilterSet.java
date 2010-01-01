@@ -172,7 +172,7 @@ public final class FilterSet
      */
     private void fillFilterCache( Properties properties )
     {
-        Hashtable rawData = new Hashtable();
+        
         for ( Enumeration e = properties.propertyNames(); e.hasMoreElements(); )
         {
             Map relevantMap = null;

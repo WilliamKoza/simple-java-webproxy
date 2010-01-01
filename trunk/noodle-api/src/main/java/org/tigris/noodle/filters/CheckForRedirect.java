@@ -44,8 +44,6 @@
  * individuals on behalf of CollabNet.
  */ 
 
-
-
 package org.tigris.noodle.filters;
 
 import javax.servlet.http.HttpServletResponse;
@@ -78,12 +76,10 @@ public class CheckForRedirect
         int status = KILL_THIS_FILTER;
         HTTPResponse proxyResponse = data.getProxyResponse();
         HttpServletResponse clientResponse = data.getClientResponse();
-        boolean booleanRedirectResult = false;
         int statusCode = proxyResponse.getStatusCode();
         if ( statusCode >= HttpServletResponse.SC_MULTIPLE_CHOICES /* 300 */
             && statusCode < HttpServletResponse.SC_NOT_MODIFIED /* 304 */)
         {
-            booleanRedirectResult = true;
             String strStatusCode = Integer.toString( statusCode );
             String location = proxyResponse.getHeader( LOCATION_HEADER );
             if ( location == null )
@@ -106,7 +102,6 @@ public class CheckForRedirect
             // responds w/ a 304 saying I'm not going to send the
             // body because the file has not changed.
             //
-            booleanRedirectResult = true;
             HttpServletResponse response = data.getClientResponse();
             response.setIntHeader( CONTENT_LENGTH_HEADER, 0 );
             response.setStatus( HttpServletResponse.SC_NOT_MODIFIED );

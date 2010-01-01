@@ -88,10 +88,10 @@ public class NoodleTest
         try
         {
             res.setContentType( "text/html" );
-            Cookie ca = new Cookie( "mycookieA", URLEncoder.encode( "jon can cook cookies" ) );
+            Cookie ca = new Cookie( "mycookieA", URLEncoder.encode( "jon can cook cookies", "UTF-8" ) );
             ca.setPath( "/" );
             res.addCookie( ca );
-            Cookie cb = new Cookie( "mycookieB", URLEncoder.encode( "jon can cook FAT cookies" ) );
+            Cookie cb = new Cookie( "mycookieB", URLEncoder.encode( "jon can cook FAT cookies", "UTF-8" ) );
             cb.setPath( "/" );
             res.addCookie( cb );
             PrintWriter out = res.getWriter();

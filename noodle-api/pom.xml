@@ -15,6 +15,10 @@
       <artifactId>servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>HTTPClient</groupId>
+      <artifactId>HTTPClient</artifactId>
+    </dependency>    
   </dependencies>  
   
 </project>

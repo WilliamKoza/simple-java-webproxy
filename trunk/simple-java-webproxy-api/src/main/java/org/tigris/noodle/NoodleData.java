@@ -118,7 +118,7 @@ public class NoodleData
     /**
      * The headers to send into the proxy request.
      */
-    private List headersToSend = new ArrayList();
+    private List<NVPair> headersToSend = new ArrayList<NVPair>();
 
     /**
      * A storage area for filter state.
@@ -222,7 +222,7 @@ public class NoodleData
     /**
      * Returns the List of name-value pairs corresponding to the headers to send.
      */
-    public List getHeadersToSend()
+    public List<NVPair> getHeadersToSend()
     {
         return this.headersToSend;
     }
@@ -231,7 +231,7 @@ public class NoodleData
      * Sets the Vector of name-value pairs corresponding to the headers to send. Should only be
      * called by request filters.
      */
-    public void setHeadersToSend( Vector headersToSend )
+    public void setHeadersToSend( List<NVPair> headersToSend )
     {
         this.headersToSend = headersToSend;
     }

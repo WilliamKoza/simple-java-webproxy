@@ -47,12 +47,12 @@
 package org.tigris.noodle.filters;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
+import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
-import java.util.Vector;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -112,8 +112,8 @@ public class CopyCookies
         StringTokenizer st = new StringTokenizer( line, ";,", true );
         String expires = "";
         boolean inexpires = false;
-        Vector cookieData = new Vector();
-        Vector cookieJar = new Vector();
+        List<String> cookieData = new ArrayList<String>();
+        List<Cookie> cookieJar = new ArrayList<Cookie>();
         while ( st.hasMoreElements() )
         {
             String token = (String) st.nextElement();
@@ -133,14 +133,14 @@ public class CopyCookies
             // regular tokens
             if ( inexpires == false && !token.equals( "," ) && !token.startsWith( "expires" ) )
             {
-                cookieData.addElement( token );
+                cookieData.add( token );
             }
 
             // handle expires
             if ( inexpires == true && !token.equals( "," ) )
             {
                 expires += ", " + token;
-                cookieData.addElement( expires );
+                cookieData.add( expires );
                 expires = "";
                 inexpires = false;
             }
@@ -152,13 +152,13 @@ public class CopyCookies
         }
         // need to call one more time
         parseCookieData( cookieJar, cookieData );
-        for ( Enumeration e = cookieJar.elements(); e.hasMoreElements(); )
+        for ( Cookie cookie : cookieJar )
         {
-            res.addCookie( (Cookie) e.nextElement() );
+            res.addCookie( cookie );
         }
     }
 
-    private static void parseCookieData( Vector cookieJar, Vector cookieData )
+    private static void parseCookieData( List<Cookie> cookieJar, List<String> cookieData )
         throws Exception
     {
         Date expiresVal = null;
@@ -166,9 +166,8 @@ public class CopyCookies
         String domainVal = null;
         String var = null;
         String varVal = null;
-        for ( Enumeration e = cookieData.elements(); e.hasMoreElements(); )
+        for ( String tok : cookieData )
         {
-            String tok = (String) e.nextElement();
             int equals_pos = tok.indexOf( '=' );
             if ( equals_pos > 0 )
             {
@@ -195,12 +194,18 @@ public class CopyCookies
         }
         Cookie cookie = new Cookie( var, varVal );
         if ( expiresVal != null )
+        {
             cookie.setMaxAge( new Long( expiresVal.getTime() ).intValue() );
+        }
         if ( domainVal != null )
+        {
             cookie.setDomain( domainVal );
+        }
         if ( pathVal != null )
+        {
             cookie.setPath( pathVal );
-        cookieJar.addElement( cookie );
-        cookieData.removeAllElements();
+        }
+        cookieJar.clear();
+        cookieData.clear();
     }
 }

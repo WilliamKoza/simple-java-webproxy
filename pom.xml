@@ -35,8 +35,8 @@
   </scm>  
   
   <modules>
-    <module>noodle-api</module>
-    <module>noodle-webapp</module>
+    <module>simple-java-webproxy-api</module>
+    <module>simple-java-webproxy-webapp</module>
   </modules>
   
   <properties>

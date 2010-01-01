@@ -165,11 +165,12 @@ public final class JServUtils
      */
     public static Cookie[] parseCookieHeader( String cookieHdr )
     {
-        Vector cookieJar = new Vector();
+        Vector<Cookie> cookieJar = new Vector<Cookie>();
 
         if ( cookieHdr == null || cookieHdr.length() == 0 )
+        {
             return new Cookie[0];
-
+        }
         StringTokenizer stok = new StringTokenizer( cookieHdr, "; " );
         while ( stok.hasMoreTokens() )
         {
@@ -191,9 +192,11 @@ public final class JServUtils
             }
             catch ( IllegalArgumentException badcookie )
             {
+                // no op
             }
             catch ( NoSuchElementException badcookie )
             {
+                // no op
             }
         }
 
@@ -213,8 +216,9 @@ public final class JServUtils
         throws IllegalArgumentException
     {
         if ( str == null )
+        {
             return null;
-
+        }
         StringBuffer dec = new StringBuffer(); // decoded string output
         int strPos = 0;
         int strLen = str.length();

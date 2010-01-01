@@ -55,6 +55,7 @@ package org.tigris.noodle.servlets.util;
  *
  */
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -68,7 +69,7 @@ import javax.servlet.http.Cookie;
 
 /**
  * Various utility methods used by the servlet engine.
- *
+ * 
  * @author Francis J. Lacoste
  * @author Ian Kluft
  * @version $Revision$ $Date$
@@ -282,13 +283,15 @@ public final class JServUtils
      * 
      * @param str the string
      * @return the url-encoded string
+     * @throws UnsupportedEncodingException 
      */
     public final static String URLEncode( String str )
+        throws UnsupportedEncodingException
     {
         if ( str == null )
         {
             return null;
         }
-        return URLEncoder.encode( str );
+        return URLEncoder.encode( str, "UTF-8" );
     }
 }

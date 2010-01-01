@@ -64,6 +64,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tigris.noodle.NoodleConstants;
 import org.tigris.noodle.NoodleData;
 import org.tigris.noodle.ProxyModule;
@@ -82,8 +84,9 @@ import HTTPClient.NVPair;
 public class Noodle
     extends HttpServlet
 {
-    private static final boolean DEBUG = false;
-
+    
+    protected Logger log = LoggerFactory.getLogger( getClass() );
+    
     private static Properties noodleProperties = new Properties();
 
     public void init( ServletConfig config )
@@ -91,9 +94,9 @@ public class Noodle
     {
         super.init( config );
 
-        if ( DEBUG )
+        if ( log.isDebugEnabled() )
         {
-            System.out.println( "noodle Init a" );
+            log.debug( "noodle Init a" );
         }
         // get a reference to the properties file.
         String propertiesFile = null;
@@ -110,14 +113,14 @@ public class Noodle
                 }
             }
             noodleProperties.clear();
-            if ( DEBUG )
+            if ( log.isDebugEnabled() )
             {
-                System.out.println( "noodle Init b" );
+                log.debug( "noodle Init b" );
             }
             noodleProperties.load( new FileInputStream( propertiesFile ) );
-            if ( DEBUG )
+            if ( log.isDebugEnabled() )
             {
-                System.out.println( "noodle Init c" );
+                log.debug( "noodle Init c" );
             }
         }
         catch ( Exception e )
@@ -140,9 +143,9 @@ public class Noodle
             throw new ServletException( "Noodle: " + cnfe.getMessage() );
         }
 
-        if ( DEBUG )
+        if ( log.isDebugEnabled() )
         {
-            System.out.println( "noodle Init d" );
+            log.debug( "noodle Init d" );
         }
         // setup some defaults
         int port = 80;
@@ -164,9 +167,9 @@ public class Noodle
 
         String serverName = noodleProperties.getProperty( NoodleConstants.DEFAULT_HOST, "localhost" );
         defaultProxyModule.setServerName( serverName );
-        if ( DEBUG )
+        if ( log.isDebugEnabled() )
         {
-            System.out.println( "noodle Init e (done)" );
+            log.debug( "noodle Init e (done)" );
         }
     }
 
@@ -176,22 +179,22 @@ public class Noodle
     public void doGet( HttpServletRequest req, HttpServletResponse res )
         throws IOException, ServletException
     {
-        if ( DEBUG )
+        if ( log.isDebugEnabled() )
         {
-            System.out.println( "doGet a" );
+            log.debug( "doGet a" );
         }
         OutputStream output = null;
         try
         {
             // Create a NoodleData object for this request.
-            if ( DEBUG )
+            if ( log.isDebugEnabled() )
             {
-                System.out.println( "doGet b" );
+                log.debug( "doGet b" );
             }
             NoodleData noodleData = new NoodleData( req, res, noodleProperties );
-            if ( DEBUG )
+            if ( log.isDebugEnabled() )
             {
-                System.out.println( "doGet c" );
+                log.debug( "doGet c" );
             }
 
             // deal with POST Data. Since this code is meant to be modular
@@ -209,16 +212,16 @@ public class Noodle
                  */
             }
 
-            if ( DEBUG )
+            if ( log.isDebugEnabled() )
             {
-                System.out.println( "doGet d" );
+                log.debug( "doGet d" );
             }
             //Proxy the request, running the request and response servlets
             //defined in noodleProperties.
             noodleData.proxyRequest();
-            if ( DEBUG )
+            if ( log.isDebugEnabled() )
             {
-                System.out.println( "doGet e" );
+                log.debug( "doGet e" );
             }
         }
         catch ( Exception e )
@@ -239,9 +242,9 @@ public class Noodle
                 output.close();
             }
         }
-        if ( DEBUG )
+        if ( log.isDebugEnabled() )
         {
-            System.out.println( "doGet f (done)" );
+            log.debug( "doGet f (done)" );
         }
     }
 

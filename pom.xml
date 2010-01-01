@@ -49,6 +49,8 @@
     <compiler.target>1.5</compiler.target>
     <siteUrlDis>dav:https://simple-java-webproxy.googlecode.com/svn/wiki/site</siteUrlDis>
     <siteUrlDisId>google-maven-snapshot-repository</siteUrlDisId>
+    
+    <slf4jVersion>1.5.8</slf4jVersion>
   </properties>  
   
   <build>
@@ -122,6 +124,21 @@
         <artifactId>HTTPClient</artifactId>
         <version>0.3-3</version>
       </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4jVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>${slf4jVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>${slf4jVersion}</version>
+      </dependency>      
     </dependencies>
   </dependencyManagement>
   

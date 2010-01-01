@@ -44,25 +44,24 @@
  * individuals on behalf of CollabNet.
  */ 
 
+
+
 package org.tigris.noodle.filters;
 
-import java.io.IOException;
-
-import HTTPClient.HTTPResponse;
-import HTTPClient.ModuleException;
-
-import org.tigris.noodle.NoodleResponseFilter;
-import org.tigris.noodle.NoodleData;
 import org.tigris.noodle.NoodleConstants;
+import org.tigris.noodle.NoodleData;
+import org.tigris.noodle.NoodleResponseFilter;
 import org.tigris.noodle.ResponseBlock;
 
+import HTTPClient.HTTPResponse;
+
 /**
- * This is a proxy response filter to be run after CheckForRedirect. It
- * determines the content type of the proxy response, and propagates it
- * to the client response. If the content type is binary (non-"text/html"),
- * it disables further filtering.
+ * This is a proxy response filter to be run after CheckForRedirect. It determines the content type
+ * of the proxy response, and propagates it to the client response. If the content type is binary
+ * (non-"text/html"), it disables further filtering.
  */
-public class HandleContentType implements NoodleResponseFilter
+public class HandleContentType
+    implements NoodleResponseFilter
 {
     /**
      * Header containing content type.
@@ -75,31 +74,30 @@ public class HandleContentType implements NoodleResponseFilter
     private static final String CONTENT_LENGTH_HEADER_NAME = "Content-Length";
 
     /**
-     * Propagate the content type to the client response. Turn
-     * off further filtering unless we're delivering HTML data.
+     * Propagate the content type to the client response. Turn off further filtering unless we're
+     * delivering HTML data.
      */
-    public int filter(NoodleData data, ResponseBlock block)
+    public int filter( NoodleData data, ResponseBlock block )
         throws Exception
     {
         String contentType = NoodleConstants.DEFAULT_CONTENT_TYPE;
         HTTPResponse proxyResponse = data.getProxyResponse();
-        String type = proxyResponse.getHeader(CONTENT_TYPE_HEADER_NAME);
-        if (type != null && type.length() > 0)
+        String type = proxyResponse.getHeader( CONTENT_TYPE_HEADER_NAME );
+        if ( type != null && type.length() > 0 )
         {
             contentType = type;
         }
-        data.getClientResponse().setContentType(contentType);
-        
+        data.getClientResponse().setContentType( contentType );
+
         int returnStatus = KILL_THIS_FILTER;
-        if (!contentType.startsWith(NoodleConstants.CONTENT_TYPE_HTML))
+        if ( !contentType.startsWith( NoodleConstants.CONTENT_TYPE_HTML ) )
         {
             // Propagate content-length if present so that IE can deal
             // with binaries.
-            String len = proxyResponse.getHeader(CONTENT_LENGTH_HEADER_NAME);
-            if (len != null && len.length() > 0)
+            String len = proxyResponse.getHeader( CONTENT_LENGTH_HEADER_NAME );
+            if ( len != null && len.length() > 0 )
             {
-                data.getClientResponse().setHeader(CONTENT_LENGTH_HEADER_NAME,
-                                                   len);
+                data.getClientResponse().setHeader( CONTENT_LENGTH_HEADER_NAME, len );
             }
             returnStatus = KILL_ALL_FILTERS;
         }

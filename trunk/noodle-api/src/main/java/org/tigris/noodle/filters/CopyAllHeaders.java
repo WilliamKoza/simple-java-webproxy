@@ -44,46 +44,47 @@
  * individuals on behalf of Collab.Net.
  */ 
 
+
+
 package org.tigris.noodle.filters;
 
-import java.util.*;
-import java.net.*;
-// Java Servlet Classes
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.util.Enumeration;
 
-import org.tigris.noodle.*;
+import javax.servlet.http.HttpServletRequest;
 
-import HTTPClient.*;
+import org.tigris.noodle.NoodleData;
+import org.tigris.noodle.NoodleRequestFilter;
+
+import HTTPClient.NVPair;
 
 /**
- *    <h3>Request Filter</h3>
- *    
- *    This filter will copy all the headers that have a value from the
- *    client request to the proxy request.  It doesn't attempt to
- *    modify any of them. This filter should be executed before
- *    any other request filter.
- *
+ * <h3>Request Filter</h3>
+ * 
+ * This filter will copy all the headers that have a value from the client request to the proxy
+ * request. It doesn't attempt to modify any of them. This filter should be executed before any
+ * other request filter.
+ * 
  * @author <a href="mailto:jon@collab.net">Jon S. Stevens</a>
- * @author <a href="mailto:leonardr@collab.net">Leonard Richardson</a> 
+ * @author <a href="mailto:leonardr@collab.net">Leonard Richardson</a>
  */
-public class CopyAllHeaders implements NoodleRequestFilter
+public class CopyAllHeaders
+    implements NoodleRequestFilter
 {
-    public void filter(NoodleData noodleData)
+    public void filter( NoodleData noodleData )
         throws Exception
     {
         HttpServletRequest req = noodleData.getClientRequest();
         // get all the headers from the request
-        for (Enumeration e = req.getHeaderNames(); e.hasMoreElements();)
+        for ( Enumeration e = req.getHeaderNames(); e.hasMoreElements(); )
         {
             String header = (String) e.nextElement();
-            String value = req.getHeader(header);
-            if (value == null)
+            String value = req.getHeader( header );
+            if ( value == null )
             {
                 value = "";
             }
-            NVPair tmp = new NVPair(header,value);
-            noodleData.getHeadersToSend().add(tmp);
+            NVPair tmp = new NVPair( header, value );
+            noodleData.getHeadersToSend().add( tmp );
         }
     }
-}    
+}

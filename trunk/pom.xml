@@ -5,12 +5,134 @@
   <artifactId>noodle</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
+  
+  <inceptionYear>2010</inceptionYear>
+  <developers>
+    <developer>
+      <id>olamy</id>
+      <name>Olivier Lamy</name>
+      <email>olamy@apache.org</email>
+      <url>http://people.apache.org/~olamy</url>
+      <organization>ASF</organization>
+      <roles>
+        <role>Documentation</role>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+  </developers>
+  
+  <licenses>
+    <license>
+      <name>ASF</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>  
+  
+  <scm>
+    <connection>scm:svn:http://simple-java-webproxy.googlecode.com/svn/trunk/</connection>
+    <developerConnection>scm:svn:https://simple-java-webproxy.googlecode.com/svn/trunk/</developerConnection>
+    <url>http://code.google.com/p/simple-java-webproxy/source/browse/</url>
+  </scm>  
+  
   <modules>
     <module>noodle-api</module>
     <module>noodle-webapp</module>
   </modules>
   
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <distUrlReleaseRepo></distUrlReleaseRepo>
+    <distUrlReleaseRepoId></distUrlReleaseRepoId>
+    <distUrlSnapshotRepo></distUrlSnapshotRepo>
+    <distUrlSnapshotRepoId></distUrlSnapshotRepoId>
+    <compiler.source>1.5</compiler.source>
+    <compiler.target>1.5</compiler.target>
+    <siteUrlDis>dav:https://simple-java-webproxy.googlecode.com/svn/wiki/site</siteUrlDis>
+    <siteUrlDisId>google-maven-snapshot-repository</siteUrlDisId>
+  </properties>  
+  
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>2.0.2</version>
+          <configuration>
+            <source>${compiler.source}</source>
+            <target>${compiler.target}</target>
+            <encoding>${project.build.sourceEncoding}</encoding>          
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.3</version>
+          <configuration>
+            <archive>
+              <index>true</index>
+              <manifest>
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              </manifest>
+            </archive>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.0-beta-9</version>
+          <configuration>
+            <useReleaseProfile>true</useReleaseProfile>
+            <goals>deploy</goals>
+            <arguments>-Psign</arguments>
+          </configuration>
+        </plugin>      
+      </plugins>
+    </pluginManagement>
+  </build>
+  
+  <distributionManagement>
+    <repository>
+      <id>${distUrlReleaseRepoId}</id>
+      <name>oss.sonatype.org</name>
+      <url>${distUrlReleaseRepo}</url>
+    </repository>
+    <snapshotRepository>
+      <id>${distUrlSnapshotRepoId}</id>
+      <name>oss.sonatype.org snapshots</name>
+      <url>${distUrlSnapshotRepo}</url>
+    </snapshotRepository>
+    <site>
+      <id>${siteUrlDisId}</id>
+      <name>Google Maven Site Repository</name>
+      <url>${siteUrlDis}</url>
+    </site>
+  </distributionManagement>  
+  
   <profiles>
+    <profile>
+      <id>sign</id>
+      <build>
+        <plugins>
+          <!-- We want to sign the artifact, the POM, and all attached artifacts -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.0-alpha-4</version>
+            <configuration>
+              <passphrase>${gpg.passphrase}</passphrase>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>  
     <profile>
       <id>m2e</id>
       <activation>

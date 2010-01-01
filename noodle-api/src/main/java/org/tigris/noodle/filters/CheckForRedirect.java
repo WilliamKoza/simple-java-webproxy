@@ -44,32 +44,35 @@
  * individuals on behalf of CollabNet.
  */ 
 
+
+
 package org.tigris.noodle.filters;
 
-import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
-import HTTPClient.HTTPResponse;
-import HTTPClient.ModuleException;
 
-import org.tigris.noodle.NoodleResponseFilter;
 import org.tigris.noodle.NoodleData;
+import org.tigris.noodle.NoodleResponseFilter;
 import org.tigris.noodle.ResponseBlock;
 
+import HTTPClient.HTTPResponse;
+
 /**
- * This is the first proxy response filter which should be run.
- * It checks for and propagates redirects sent out by the proxy.
+ * This is the first proxy response filter which should be run. It checks for and propagates
+ * redirects sent out by the proxy.
  */
-public class CheckForRedirect implements NoodleResponseFilter
+public class CheckForRedirect
+    implements NoodleResponseFilter
 {
     private static final boolean DEBUG = true;
 
     private static final String LOCATION_HEADER = "Location";
+
     private static final String CONTENT_LENGTH_HEADER = "Content-Length";
 
     /**
      * Handle unusual status codes.
      */
-    public int filter(NoodleData data, ResponseBlock block)
+    public int filter( NoodleData data, ResponseBlock block )
         throws Exception
     {
         int status = KILL_THIS_FILTER;
@@ -77,26 +80,24 @@ public class CheckForRedirect implements NoodleResponseFilter
         HttpServletResponse clientResponse = data.getClientResponse();
         boolean booleanRedirectResult = false;
         int statusCode = proxyResponse.getStatusCode();
-        if(statusCode >= HttpServletResponse.SC_MULTIPLE_CHOICES /* 300 */
-           && statusCode < HttpServletResponse.SC_NOT_MODIFIED /* 304 */)
+        if ( statusCode >= HttpServletResponse.SC_MULTIPLE_CHOICES /* 300 */
+            && statusCode < HttpServletResponse.SC_NOT_MODIFIED /* 304 */)
         {
             booleanRedirectResult = true;
-            String strStatusCode = Integer.toString(statusCode);
-            String location = proxyResponse.getHeader(LOCATION_HEADER);
-            if(location == null)
+            String strStatusCode = Integer.toString( statusCode );
+            String location = proxyResponse.getHeader( LOCATION_HEADER );
+            if ( location == null )
             {
-                throw new Exception("No location. StatusCode: "
-                                    + strStatusCode);
+                throw new Exception( "No location. StatusCode: " + strStatusCode );
             }
-            if(DEBUG) 
+            if ( DEBUG )
             {
-                System.out.println("Redirect to: " + location + 
-                                   ". StatusCode = " + strStatusCode);
+                System.out.println( "Redirect to: " + location + ". StatusCode = " + strStatusCode );
             }
-            clientResponse.sendRedirect(location);
+            clientResponse.sendRedirect( location );
             status = KILL_ALL_FILTERS;
         }
-        else if(statusCode == HttpServletResponse.SC_NOT_MODIFIED)
+        else if ( statusCode == HttpServletResponse.SC_NOT_MODIFIED )
         {
             // 304 needs special handling.  See:
             // http://www.ics.uci.edu/pub/ietf/http/rfc1945.html#Code304
@@ -107,8 +108,8 @@ public class CheckForRedirect implements NoodleResponseFilter
             //
             booleanRedirectResult = true;
             HttpServletResponse response = data.getClientResponse();
-            response.setIntHeader(CONTENT_LENGTH_HEADER, 0);
-            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+            response.setIntHeader( CONTENT_LENGTH_HEADER, 0 );
+            response.setStatus( HttpServletResponse.SC_NOT_MODIFIED );
             status = KILL_ALL_FILTERS;
         }
         return status;

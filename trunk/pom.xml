@@ -109,6 +109,17 @@
     </site>
   </distributionManagement>  
   
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>2.4</version>
+        <scope>provided</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  
   <profiles>
     <profile>
       <id>sign</id>

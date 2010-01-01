@@ -45,8 +45,6 @@
  */
 package org.tigris.noodle;
 
-import org.tigris.noodle.NoodleFilter;
-import org.tigris.noodle.NoodleData;
 
 /**
  * Those who want to Noodle can Noodle with NoodleFilters.
@@ -55,40 +53,36 @@ import org.tigris.noodle.NoodleData;
  * @author <a href="mailto:dlr@collab.net">Daniel Rall</a>
  * @author <a href="mailto:leonardr@collab.net">Leonard Richardson</a>
  */
-public interface NoodleResponseFilter extends NoodleFilter
+public interface NoodleResponseFilter
+    extends NoodleFilter
 {
     /**
-     * Filter status indicating that this filter should be called
-     * on the next block.
+     * Filter status indicating that this filter should be called on the next block.
      */
     static final int MAINTAIN_THIS_FILTER = 0;
 
     /**
-     * Filter status indicating that this filter is done processing
-     * and need no longer be called.
+     * Filter status indicating that this filter is done processing and need no longer be called.
      */
     static final int KILL_THIS_FILTER = 1;
 
     /**
-     * Filter status indicating that this filter has determined that
-     * no more filtering needs to be done--there was a redirect or
-     * something.
+     * Filter status indicating that this filter has determined that no more filtering needs to be
+     * done--there was a redirect or something.
      */
     static final int KILL_ALL_FILTERS = 2;
 
     /**
-     * Hook called for a filter on every block of proxied data until
-     * there is no block of proxied data, or until this filter returns
-     * a filter status code other than MANTAIN_THIS_FILTER.
-     *
-     * @return a status code; one of the four *FILTER* constants in
-     * this class.  
-     *
-     * @param noodleData Contains miscellaneous storage and
-     *                   information about the request; you can also use
-     *                   this to mantain filter state.  
-     *
+     * Hook called for a filter on every block of proxied data until there is no block of proxied
+     * data, or until this filter returns a filter status code other than MANTAIN_THIS_FILTER.
+     * 
+     * @return a status code; one of the four *FILTER* constants in this class.
+     * 
+     * @param noodleData Contains miscellaneous storage and information about the request; you can
+     *            also use this to mantain filter state.
+     * 
      * @param responseBlock The current response block to be filtered.
      */
-    int filter(NoodleData noodleData, ResponseBlock block) throws Exception;
+    int filter( NoodleData noodleData, ResponseBlock block )
+        throws Exception;
 }

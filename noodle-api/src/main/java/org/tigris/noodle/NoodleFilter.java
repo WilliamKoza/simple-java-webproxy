@@ -50,4 +50,5 @@ package org.tigris.noodle;
  */
 public interface NoodleFilter
 {
+    // no op
 }

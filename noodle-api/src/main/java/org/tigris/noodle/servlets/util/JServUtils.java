@@ -56,13 +56,14 @@ package org.tigris.noodle.servlets.util;
  */
 
 import java.net.URLEncoder;
-import java.util.Date;
-import java.util.Vector;
-import java.util.StringTokenizer;
-import java.util.Locale;
-import java.util.TimeZone;
-import java.util.NoSuchElementException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
+import java.util.TimeZone;
+import java.util.Vector;
+
 import javax.servlet.http.Cookie;
 
 /**
@@ -72,169 +73,201 @@ import javax.servlet.http.Cookie;
  * @author Ian Kluft
  * @version $Revision$ $Date$
  */
-public final class JServUtils {
+public final class JServUtils
+{
 
-    private static SimpleDateFormat cookieDate =
-        new SimpleDateFormat("EEE, dd-MMM-yyyy HH:mm:ss zz", Locale.US );
+    private static SimpleDateFormat cookieDate = new SimpleDateFormat( "EEE, dd-MMM-yyyy HH:mm:ss zz", Locale.US );
 
-    static {
-        cookieDate.setTimeZone(TimeZone.getTimeZone("GMT"));
+    static
+    {
+        cookieDate.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
     }
 
     /**
-     * Encode a cookie as per the Netscape Cookies specification. The
-     * resulting string can be used in a Set-Cookie header.
-     *
+     * Encode a cookie as per the Netscape Cookies specification. The resulting string can be used
+     * in a Set-Cookie header.
+     * 
      * @param cookie The cookie to encode.
      * @return A string following Netscape Cookies specification.
      */
-    public static String encodeCookie(Cookie cookie) {
+    public static String encodeCookie( Cookie cookie )
+    {
         StringBuffer buf = new StringBuffer( cookie.getName() );
-        buf.append('=');
-        buf.append(cookie.getValue());
+        buf.append( '=' );
+        buf.append( cookie.getValue() );
 
         long age = cookie.getMaxAge();
-        if (age > 0) {
-            buf.append("; expires=");
-            buf.append(cookieDate.format(
-                new Date(System.currentTimeMillis() + (long)age * 1000 )));
-        } else if (age == 0) {
-            buf.append("; expires=");
+        if ( age > 0 )
+        {
+            buf.append( "; expires=" );
+            buf.append( cookieDate.format( new Date( System.currentTimeMillis() + (long) age * 1000 ) ) );
+        }
+        else if ( age == 0 )
+        {
+            buf.append( "; expires=" );
             // Set expiration to the epoch to delete the cookie
-            buf.append(cookieDate.format(new Date(0)));
+            buf.append( cookieDate.format( new Date( 0 ) ) );
         }
 
-        if (cookie.getDomain() != null) {
-            buf.append("; domain=");
-            buf.append(cookie.getDomain());
+        if ( cookie.getDomain() != null )
+        {
+            buf.append( "; domain=" );
+            buf.append( cookie.getDomain() );
         }
 
-        if (cookie.getPath() != null) {
-            buf.append("; path=");
-            buf.append(cookie.getPath());
+        if ( cookie.getPath() != null )
+        {
+            buf.append( "; path=" );
+            buf.append( cookie.getPath() );
         }
 
-        if (cookie.getSecure()) {
-            buf.append("; secure");
+        if ( cookie.getSecure() )
+        {
+            buf.append( "; secure" );
         }
 
         return buf.toString();
     }
+
     /**
-     * Parse a content-type header for the character encoding. If the
-     * content-type is null or there is no explicit character encoding,
-     * ISO-8859-1 is returned.
-     *
+     * Parse a content-type header for the character encoding. If the content-type is null or there
+     * is no explicit character encoding, ISO-8859-1 is returned.
+     * 
      * @param contentType a content type header.
      */
-    public static String parseCharacterEncoding(String contentType) {
+    public static String parseCharacterEncoding( String contentType )
+    {
         int start;
         int end;
 
-        if ((contentType == null)
-                || ((start = contentType.indexOf("charset="))) == -1 ) {
+        if ( ( contentType == null ) || ( ( start = contentType.indexOf( "charset=" ) ) ) == -1 )
+        {
             return "ISO-8859-1";
         }
 
-        String encoding = contentType.substring(start + 8);
+        String encoding = contentType.substring( start + 8 );
 
-        if ((end = encoding.indexOf(";")) > -1) {
-            return encoding.substring(0, end);
-        } else {
+        if ( ( end = encoding.indexOf( ";" ) ) > -1 )
+        {
+            return encoding.substring( 0, end );
+        }
+        else
+        {
             return encoding;
         }
     }
+
     /**
-     * Parse a cookie header into an array of cookies as per
-     * RFC2109 - HTTP Cookies
-     *
+     * Parse a cookie header into an array of cookies as per RFC2109 - HTTP Cookies
+     * 
      * @param cookieHdr The Cookie header value.
      */
-    public static Cookie[] parseCookieHeader(String cookieHdr) {
+    public static Cookie[] parseCookieHeader( String cookieHdr )
+    {
         Vector cookieJar = new Vector();
 
-        if(cookieHdr == null || cookieHdr.length() == 0)
+        if ( cookieHdr == null || cookieHdr.length() == 0 )
             return new Cookie[0];
 
-        StringTokenizer stok = new StringTokenizer(cookieHdr, "; ");
-        while (stok.hasMoreTokens()) {
-            try {
+        StringTokenizer stok = new StringTokenizer( cookieHdr, "; " );
+        while ( stok.hasMoreTokens() )
+        {
+            try
+            {
                 String tok = stok.nextToken();
-                int equals_pos = tok.indexOf('=');
-                if (equals_pos > 0) {
-                    String name = URLDecode(tok.substring(0, equals_pos));
-                    String value = URLDecode(tok.substring(equals_pos + 1));
-                    cookieJar.addElement(new Cookie(name, value));
+                int equals_pos = tok.indexOf( '=' );
+                if ( equals_pos > 0 )
+                {
+                    String name = URLDecode( tok.substring( 0, equals_pos ) );
+                    String value = URLDecode( tok.substring( equals_pos + 1 ) );
+                    cookieJar.addElement( new Cookie( name, value ) );
                 }
-                else if ( tok.length() > 0 && equals_pos == -1 ) {
-                    String name = URLDecode(tok);
-                    cookieJar.addElement(new Cookie(name, ""));
+                else if ( tok.length() > 0 && equals_pos == -1 )
+                {
+                    String name = URLDecode( tok );
+                    cookieJar.addElement( new Cookie( name, "" ) );
                 }
-            } catch (IllegalArgumentException badcookie) {
-            } catch (NoSuchElementException badcookie) {
+            }
+            catch ( IllegalArgumentException badcookie )
+            {
+            }
+            catch ( NoSuchElementException badcookie )
+            {
             }
         }
-    
+
         Cookie[] cookies = new Cookie[cookieJar.size()];
-        cookieJar.copyInto(cookies);
+        cookieJar.copyInto( cookies );
         return cookies;
     }
+
     /**
      * This method decodes the given urlencoded string.
-     *
-     * @param  str the url-encoded string
+     * 
+     * @param str the url-encoded string
      * @return the decoded string
-     * @exception IllegalArgumentException If a '%' is not
-     * followed by a valid 2-digit hex number.
+     * @exception IllegalArgumentException If a '%' is not followed by a valid 2-digit hex number.
      */
-    public final static String URLDecode(String str)
-            throws IllegalArgumentException {
-        if (str == null)  return  null;
+    public final static String URLDecode( String str )
+        throws IllegalArgumentException
+    {
+        if ( str == null )
+            return null;
 
-        StringBuffer dec = new StringBuffer();    // decoded string output
+        StringBuffer dec = new StringBuffer(); // decoded string output
         int strPos = 0;
         int strLen = str.length();
 
-        dec.ensureCapacity(str.length());
-        while (strPos < strLen) {
-            int laPos;        // lookahead position
+        dec.ensureCapacity( str.length() );
+        while ( strPos < strLen )
+        {
+            int laPos; // lookahead position
 
             // look ahead to next URLencoded metacharacter, if any
-            for (laPos = strPos; laPos < strLen; laPos++) {
-                char laChar = str.charAt(laPos);
-                if ((laChar == '+') || (laChar == '%')) {
+            for ( laPos = strPos; laPos < strLen; laPos++ )
+            {
+                char laChar = str.charAt( laPos );
+                if ( ( laChar == '+' ) || ( laChar == '%' ) )
+                {
                     break;
                 }
             }
 
             // if there were non-metacharacters, copy them all as a block
-            if (laPos > strPos) {
-                dec.append(str.substring(strPos,laPos));
+            if ( laPos > strPos )
+            {
+                dec.append( str.substring( strPos, laPos ) );
                 strPos = laPos;
             }
 
             // shortcut out of here if we're at the end of the string
-            if (strPos >= strLen) {
+            if ( strPos >= strLen )
+            {
                 break;
             }
 
             // process next metacharacter
-            char metaChar = str.charAt(strPos);
-            if (metaChar == '+') {
-                dec.append(' ');
+            char metaChar = str.charAt( strPos );
+            if ( metaChar == '+' )
+            {
+                dec.append( ' ' );
                 strPos++;
                 continue;
-            } else if (metaChar == '%') {
-                try {
-                    dec.append((char) Integer.parseInt(
-                    str.substring(strPos + 1, strPos + 3), 16));
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException("invalid hexadecimal "
-                    + str.substring(strPos + 1, strPos + 3)
-                    + " in URLencoded string (illegal unescaped '%'?)" );
-                } catch (StringIndexOutOfBoundsException e) {
-                    throw new IllegalArgumentException("illegal unescaped '%' "
-                    + " in URLencoded string" );
+            }
+            else if ( metaChar == '%' )
+            {
+                try
+                {
+                    dec.append( (char) Integer.parseInt( str.substring( strPos + 1, strPos + 3 ), 16 ) );
+                }
+                catch ( NumberFormatException e )
+                {
+                    throw new IllegalArgumentException( "invalid hexadecimal " + str.substring( strPos + 1, strPos + 3 )
+                        + " in URLencoded string (illegal unescaped '%'?)" );
+                }
+                catch ( StringIndexOutOfBoundsException e )
+                {
+                    throw new IllegalArgumentException( "illegal unescaped '%' " + " in URLencoded string" );
                 }
                 strPos += 3;
             }
@@ -242,15 +275,20 @@ public final class JServUtils {
 
         return dec.toString();
     }
+
     /**
-     * This method urlencodes the given string. This method is here for
-     * symmetry and simplicity reasons and just calls URLEncoder.encode().
-     *
-     * @param  str the string
+     * This method urlencodes the given string. This method is here for symmetry and simplicity
+     * reasons and just calls URLEncoder.encode().
+     * 
+     * @param str the string
      * @return the url-encoded string
      */
-    public final static String URLEncode(String str) {
-        if (str == null)  return  null;
-        return URLEncoder.encode(str);
+    public final static String URLEncode( String str )
+    {
+        if ( str == null )
+        {
+            return null;
+        }
+        return URLEncoder.encode( str );
     }
 }

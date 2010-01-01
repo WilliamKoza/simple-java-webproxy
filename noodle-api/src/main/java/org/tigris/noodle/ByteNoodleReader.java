@@ -48,16 +48,8 @@ package org.tigris.noodle;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
-import java.util.*;
-import java.net.*;
-
-// Java Servlet Classes
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import HTTPClient.*;
+import HTTPClient.ModuleException;
 
 /**
  * ByteNoodleReader implements the NoodleReader interface, but reads data
@@ -66,21 +58,22 @@ import HTTPClient.*;
  * @author <a href="mailto:edk@collab.net">Ed Korthof</a>
  */
 
-public class ByteNoodleReader implements NoodleReader
+public class ByteNoodleReader
+    implements NoodleReader
 {
-   /**
-    * Buffer size.
-    */
-   private static final int BUFFER_SIZE = 4096;
-
-   /**
-    * The input stream
-    */
-   private InputStream input = null;
+    /**
+     * Buffer size.
+     */
+    private static final int BUFFER_SIZE = 4096;
 
     /**
-     * The next block of data to be filtered. A pointer to one of
-     * the two buffers. Not accessible from outside ByteReader.
+     * The input stream
+     */
+    private InputStream input = null;
+
+    /**
+     * The next block of data to be filtered. A pointer to one of the two buffers. Not accessible
+     * from outside ByteReader.
      */
     private byte[] lookaheadBlock = null;
 
@@ -112,7 +105,7 @@ public class ByteNoodleReader implements NoodleReader
     /**
      * Constructor.
      */
-    public ByteNoodleReader(NoodleData data)
+    public ByteNoodleReader( NoodleData data )
         throws NoodleException
     {
         this.data = data;
@@ -120,53 +113,53 @@ public class ByteNoodleReader implements NoodleReader
         {
             this.input = data.getProxyResponse().getInputStream();
         }
-        catch (ModuleException me)
+        catch ( ModuleException me )
         {
-            throw new NoodleException("unable to get response stream", me);
+            throw new NoodleException( "unable to get response stream", me );
         }
-        catch (IOException io)
+        catch ( IOException io )
         {
-            throw new NoodleException("i/o error getting response stream", io);
+            throw new NoodleException( "i/o error getting response stream", io );
         }
     }
 
     /**
-     * Reads from the proxy resposne until EOF or until the given buffer
-     * is full.  Impl moved from NoodleData.
+     * Reads from the proxy resposne until EOF or until the given buffer is full. Impl moved from
+     * NoodleData.
      */
-    public int fillBlock(byte[] byteBlock)
+    public int fillBlock( byte[] byteBlock )
         throws NoodleException
     {
         int totalBytesRead = 0;
         int bytesReadThisTime = 0;
         try
         {
-            while (bytesReadThisTime > -1 && totalBytesRead < byteBlock.length)
+            while ( bytesReadThisTime > -1 && totalBytesRead < byteBlock.length )
             {
                 int start = totalBytesRead;
                 int toRead = byteBlock.length - start;
                 try
                 {
-                    bytesReadThisTime = input.read(byteBlock, start, toRead);
+                    bytesReadThisTime = input.read( byteBlock, start, toRead );
                 }
-                catch (EOFException eof)
+                catch ( EOFException eof )
                 {
                     // we finished reading
                     bytesReadThisTime = -1;
                 }
-                if (bytesReadThisTime > -1)
+                if ( bytesReadThisTime > -1 )
                 {
                     totalBytesRead += bytesReadThisTime;
                 }
             }
-            if (bytesReadThisTime == -1)
+            if ( bytesReadThisTime == -1 )
             {
                 readComplete = true;
             }
         }
-        catch (IOException io)
+        catch ( IOException io )
         {
-            throw new NoodleException("error proxying data", io);
+            throw new NoodleException( "error proxying data", io );
         }
         return totalBytesRead;
     }
@@ -181,56 +174,54 @@ public class ByteNoodleReader implements NoodleReader
 
     /**
      * Ask for the next block.
-     *
-     * Swaps the old lookahead block for the new current block and
-     * reads new data into the lookahead block until it's is full or
-     * we reach EOF. Also handles block initialization.
+     * 
+     * Swaps the old lookahead block for the new current block and reads new data into the lookahead
+     * block until it's is full or we reach EOF. Also handles block initialization.
      */
     public ResponseBlock doRead()
         throws NoodleException
     {
-        byte [] byteBlock;
+        byte[] byteBlock;
         int blockSize;
-        if (lookaheadBlock == null)
-        {   
+        if ( lookaheadBlock == null )
+        {
             //No data has been read yet.  Read the first block and (if
             //there's more than 4K) the next block, for lookahead
             //purposes.
             byteBlock = buffer1;
-            blockSize = fillBlock(byteBlock);
-            if (!readComplete)
-            {   
+            blockSize = fillBlock( byteBlock );
+            if ( !readComplete )
+            {
                 lookaheadBlock = buffer2;
-                lookaheadBlockSize = fillBlock(lookaheadBlock);
+                lookaheadBlockSize = fillBlock( lookaheadBlock );
             }
         }
         else
-        {   
+        {
             //We are reading the third or subsequent block. Swap the
             //'current' block and the 'lookahead' block, and read into the
             //next 'lookahead' block.
-            byte[] newBlock = (lookaheadBlock == buffer1 ? buffer2 : buffer1);
+            byte[] newBlock = ( lookaheadBlock == buffer1 ? buffer2 : buffer1 );
             byteBlock = lookaheadBlock;
             blockSize = lookaheadBlockSize;
             lookaheadBlock = newBlock;
-            lookaheadBlockSize = fillBlock(lookaheadBlock);
+            lookaheadBlockSize = fillBlock( lookaheadBlock );
         }
 
-        if (readComplete)
+        if ( readComplete )
         {
             //We are done reading. If there is a lookahead buffer,
             //merge it in with the block to form a larger block.
-            if (lookaheadBlock != null)
+            if ( lookaheadBlock != null )
             {
-                byte[] finalBlock = new byte[blockSize+lookaheadBlockSize];
-                System.arraycopy(byteBlock, 0, finalBlock, 0, blockSize);
-                System.arraycopy(lookaheadBlock, 0, finalBlock, blockSize,
-                                 lookaheadBlockSize);
+                byte[] finalBlock = new byte[blockSize + lookaheadBlockSize];
+                System.arraycopy( byteBlock, 0, finalBlock, 0, blockSize );
+                System.arraycopy( lookaheadBlock, 0, finalBlock, blockSize, lookaheadBlockSize );
                 byteBlock = finalBlock;
                 lookaheadBlock = null;
                 blockSize = byteBlock.length;
             }
         }
-        return new ResponseBlock(byteBlock, 0, blockSize, null);
+        return new ResponseBlock( byteBlock, 0, blockSize, null );
     }
 }

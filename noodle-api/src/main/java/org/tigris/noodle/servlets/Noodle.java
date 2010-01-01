@@ -47,16 +47,29 @@
 package org.tigris.noodle.servlets;
 
 // Java Servlet Classes
-import javax.servlet.*;
-import javax.servlet.http.*;
-// Java Core Classes
-import java.io.*;
-import java.util.*;
-import java.net.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.Vector;
 
-import HTTPClient.*;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import org.tigris.noodle.*;
+import org.tigris.noodle.NoodleConstants;
+import org.tigris.noodle.NoodleData;
+import org.tigris.noodle.ProxyModule;
+
+import HTTPClient.Codecs;
+import HTTPClient.HTTPConnection;
+import HTTPClient.NVPair;
 
 /**
  *  This is the main Noodle Servlet class. To implement within your
@@ -65,124 +78,119 @@ import org.tigris.noodle.*;
  *  
  *  @author <a href="mailto:jon@collab.net">Jon S. Stevens</a> 
  */
-public class Noodle extends HttpServlet
+public class Noodle
+    extends HttpServlet
 {
     private static final boolean DEBUG = false;
 
     private static Properties noodleProperties = new Properties();
 
-    public void init(ServletConfig config) throws ServletException
+    public void init( ServletConfig config )
+        throws ServletException
     {
-        super.init(config);
+        super.init( config );
 
-        if (DEBUG)
+        if ( DEBUG )
         {
-            System.out.println("noodle Init a");
+            System.out.println( "noodle Init a" );
         }
         // get a reference to the properties file.
         String propertiesFile = null;
         try
         {
-            propertiesFile = getInitParameter(NoodleConstants.PROPERTIES);
-            if (propertiesFile != null)
+            propertiesFile = getInitParameter( NoodleConstants.PROPERTIES );
+            if ( propertiesFile != null )
             {
                 // Translate to the real path.
-                String realPath = getServletContext()
-                    .getRealPath(propertiesFile);
-                if (realPath != null)
+                String realPath = getServletContext().getRealPath( propertiesFile );
+                if ( realPath != null )
                 {
                     propertiesFile = realPath;
                 }
             }
             noodleProperties.clear();
-            if (DEBUG)
+            if ( DEBUG )
             {
-                System.out.println("noodle Init b");
+                System.out.println( "noodle Init b" );
             }
-            noodleProperties.load(new FileInputStream(propertiesFile));
-            if (DEBUG)
+            noodleProperties.load( new FileInputStream( propertiesFile ) );
+            if ( DEBUG )
             {
-                System.out.println("noodle Init c");
+                System.out.println( "noodle Init c" );
             }
         }
-        catch (Exception e)
+        catch ( Exception e )
         {
-            String message = "Noodle: Could not open properties file path: " + 
-                propertiesFile + " " + e.getMessage();
-            System.err.println(message);
-            throw new ServletException(message);
+            String message = "Noodle: Could not open properties file path: " + propertiesFile + " " + e.getMessage();
+            System.err.println( message );
+            throw new ServletException( message );
         }
 
         //Remove the default HTTPClient.CookieModule.class
         //so that it can be overridden by our own implementation
-        HTTPConnection.removeDefaultModule(HTTPClient.CookieModule.class);
+        HTTPConnection.removeDefaultModule( HTTPClient.CookieModule.class );
         try
         {
-            HTTPConnection.addDefaultModule
-                (Class.forName("org.tigris.noodle.NoodleCookieModule"), 1);
+            HTTPConnection.addDefaultModule( Class.forName( "org.tigris.noodle.NoodleCookieModule" ), 1 );
         }
-        catch (ClassNotFoundException cnfe)
+        catch ( ClassNotFoundException cnfe )
         {
             //Should never get here, but just in case
-            throw new ServletException ("Noodle: " + cnfe.getMessage());
+            throw new ServletException( "Noodle: " + cnfe.getMessage() );
         }
-        
-        if (DEBUG)
+
+        if ( DEBUG )
         {
-            System.out.println("noodle Init d");
+            System.out.println( "noodle Init d" );
         }
         // setup some defaults
         int port = 80;
-        String configuredPort =
-            noodleProperties.getProperty(NoodleConstants.DEFAULT_PORT);
+        String configuredPort = noodleProperties.getProperty( NoodleConstants.DEFAULT_PORT );
         try
         {
-            if (configuredPort != null && configuredPort.length() > 0)
+            if ( configuredPort != null && configuredPort.length() > 0 )
             {
-                port = Integer.parseInt(configuredPort);
+                port = Integer.parseInt( configuredPort );
             }
         }
-        catch (NumberFormatException e)
+        catch ( NumberFormatException e )
         {
-            System.err.println(NoodleConstants.DEFAULT_PORT + " '" +
-                               configuredPort +
-                               "' not parsable as an integer: Defaulting " +
-                               "to " + port);
+            System.err.println( NoodleConstants.DEFAULT_PORT + " '" + configuredPort
+                + "' not parsable as an integer: Defaulting " + "to " + port );
         }
         ProxyModule defaultProxyModule = ProxyModule.getInstance();
-        defaultProxyModule.setServerPort(port);
+        defaultProxyModule.setServerPort( port );
 
-        String serverName = noodleProperties.getProperty
-            (NoodleConstants.DEFAULT_HOST, "localhost");
-        defaultProxyModule.setServerName(serverName);
-        if (DEBUG)
+        String serverName = noodleProperties.getProperty( NoodleConstants.DEFAULT_HOST, "localhost" );
+        defaultProxyModule.setServerName( serverName );
+        if ( DEBUG )
         {
-            System.out.println("noodle Init e (done)");
+            System.out.println( "noodle Init e (done)" );
         }
     }
 
     /**
      * This is the core of the application.
      */
-    public void doGet (HttpServletRequest req, HttpServletResponse res)
+    public void doGet( HttpServletRequest req, HttpServletResponse res )
         throws IOException, ServletException
     {
-        if (DEBUG)
+        if ( DEBUG )
         {
-            System.out.println("doGet a");
+            System.out.println( "doGet a" );
         }
         OutputStream output = null;
         try
         {
             // Create a NoodleData object for this request.
-            if (DEBUG)
+            if ( DEBUG )
             {
-                System.out.println("doGet b");
+                System.out.println( "doGet b" );
             }
-            NoodleData noodleData = new NoodleData(req, res, noodleProperties);
-            if (DEBUG)
+            NoodleData noodleData = new NoodleData( req, res, noodleProperties );
+            if ( DEBUG )
             {
-                System.out.println("doGet c");            
+                System.out.println( "doGet c" );
             }
 
             // deal with POST Data. Since this code is meant to be modular
@@ -190,62 +198,59 @@ public class Noodle extends HttpServlet
             // the byte[] of post data here instead of within the ProxyModule
             // because other systems may have already read the byte[] of data
             // from the stream
-            if (req.getMethod().equalsIgnoreCase(NoodleConstants.POST))
+            if ( req.getMethod().equalsIgnoreCase( NoodleConstants.POST ) )
             {
-                noodleData.setPostData
-                    (ProxyModule.readFully
-                     (new BufferedInputStream(req.getInputStream())));
+                noodleData.setPostData( ProxyModule.readFully( new BufferedInputStream( req.getInputStream() ) ) );
 
                 /*
-                  This code will also work if you do not have access to 
-                  the data in the InputStream
-                  noodleData.setPostData(postToByteArray(req));
-                */
+                 * This code will also work if you do not have access to the data in the InputStream
+                 * noodleData.setPostData(postToByteArray(req));
+                 */
             }
 
-            if (DEBUG)
+            if ( DEBUG )
             {
-                System.out.println("doGet d");
+                System.out.println( "doGet d" );
             }
             //Proxy the request, running the request and response servlets
             //defined in noodleProperties.
             noodleData.proxyRequest();
-            if (DEBUG)
+            if ( DEBUG )
             {
-                System.out.println("doGet e");
+                System.out.println( "doGet e" );
             }
         }
-        catch (Exception e)
+        catch ( Exception e )
         {
             // get the outputstream
-            if (output == null)
+            if ( output == null )
             {
                 output = res.getOutputStream();
             }
-            output.write ("<pre>".getBytes());
-            output.write (stackTrace(e).getBytes());
-            output.write ("</pre>".getBytes());
+            output.write( "<pre>".getBytes() );
+            output.write( stackTrace( e ).getBytes() );
+            output.write( "</pre>".getBytes() );
         }
         finally
         {
-            if (output != null)
+            if ( output != null )
             {
                 output.close();
             }
         }
-        if (DEBUG)
+        if ( DEBUG )
         {
-            System.out.println("doGet f (done)");
+            System.out.println( "doGet f (done)" );
         }
     }
 
     /**
      * This just calls the doGet() method.
      */
-    public void doPost(HttpServletRequest req, HttpServletResponse res)
+    public void doPost( HttpServletRequest req, HttpServletResponse res )
         throws IOException, ServletException
     {
-        doGet (req, res);
+        doGet( req, res );
     }
 
     /**
@@ -259,17 +264,17 @@ public class Noodle extends HttpServlet
     /**
      * Returns the output of printStackTrace as a String
      */
-    public static final String stackTrace(Throwable e)
+    public static final String stackTrace( Throwable e )
     {
         String foo = null;
         try
         {
             // and show the Error Screen
             ByteArrayOutputStream ostr = new ByteArrayOutputStream();
-            e.printStackTrace( new PrintWriter(ostr,true) );
+            e.printStackTrace( new PrintWriter( ostr, true ) );
             foo = ostr.toString();
         }
-        catch (Exception f)
+        catch ( Exception f )
         {
             // do nothing
         }
@@ -277,41 +282,40 @@ public class Noodle extends HttpServlet
     }
 
     /**
-     * This method will convert all the parameters of a HTTP request
-     * into a byte array. It isn't the most efficient and should only be
-     * used in systems where you cannot get access to the
-     * req.getInputStream().  
+     * This method will convert all the parameters of a HTTP request into a byte array. It isn't the
+     * most efficient and should only be used in systems where you cannot get access to the
+     * req.getInputStream().
      */
-    public static final byte[] postToByteArray(HttpServletRequest req)
+    public static final byte[] postToByteArray( HttpServletRequest req )
     {
         Vector nvars = new Vector();
         // loop over all the parameters
-        for (Enumeration e = req.getParameterNames(); e.hasMoreElements(); )
+        for ( Enumeration e = req.getParameterNames(); e.hasMoreElements(); )
         {
             String name = (String) e.nextElement();
-            String[] value = req.getParameterValues(name);
-            if (value.length > 1)
+            String[] value = req.getParameterValues( name );
+            if ( value.length > 1 )
             {
                 // deal with multiple's
-                for (int k=0;k<value.length ;k++ )
+                for ( int k = 0; k < value.length; k++ )
                 {
-                    nvars.addElement(new NVPair(name, value[k]));
+                    nvars.addElement( new NVPair( name, value[k] ) );
                 }
             }
             else
             {
-                nvars.addElement(new NVPair(name, value[0]));                
+                nvars.addElement( new NVPair( name, value[0] ) );
             }
         }
         NVPair[] yep = new NVPair[nvars.size()];
         int cnt = 0;
         // create the NVPair
-        for (Enumeration e = nvars.elements();e.hasMoreElements() ; )
+        for ( Enumeration e = nvars.elements(); e.hasMoreElements(); )
         {
             yep[cnt] = (NVPair) e.nextElement();
             cnt++;
         }
         // take advantage of code already done
-        return Codecs.nv2query(yep).getBytes();
+        return Codecs.nv2query( yep ).getBytes();
     }
 }

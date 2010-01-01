@@ -53,29 +53,30 @@
 
 package org.tigris.noodle;
 
-public class NoodleException extends Exception
+public class NoodleException
+    extends Exception
 {
     protected Throwable cause;
 
-    public Throwable getCause ()
+    public Throwable getCause()
     {
         return cause;
     }
 
-    public NoodleException(Exception cause)
+    public NoodleException( Exception cause )
     {
-        super(cause.toString());
+        super( cause.toString() );
         this.cause = cause;
     }
 
-    public NoodleException(String explanation)
+    public NoodleException( String explanation )
     {
-        super(explanation);
+        super( explanation );
     }
 
-    public NoodleException(String explanation, Throwable cause)
+    public NoodleException( String explanation, Throwable cause )
     {
-        super(explanation);
+        super( explanation );
         this.cause = cause;
     }
 }

@@ -47,14 +47,17 @@
 package org.tigris.noodle.servlets;
 
 // Java Servlet Classes
-import javax.servlet.*;
-import javax.servlet.http.*;
-// Java Core Classes
-import java.io.*;
-import java.util.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URLEncoder;
 
-import org.tigris.noodle.*;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.tigris.noodle.servlets.util.ParameterParser;
 
 /**
@@ -70,66 +73,72 @@ import org.tigris.noodle.servlets.util.ParameterParser;
     
     @author <a href="mailto:jon@collab.net">Jon S. Stevens</a>
 */
-public class NoodleTest extends HttpServlet
+public class NoodleTest
+    extends HttpServlet
 {
-    public void init(ServletConfig config) throws ServletException
+    public void init( ServletConfig config )
+        throws ServletException
     {
-        super.init(config);
+        super.init( config );
     }
-    public void doGet (HttpServletRequest req, HttpServletResponse res)
+
+    public void doGet( HttpServletRequest req, HttpServletResponse res )
         throws IOException, ServletException
     {
         try
         {
-            res.setContentType("text/html");
-            Cookie ca = new Cookie("mycookieA",URLEncoder.encode("jon can cook cookies"));
-            ca.setPath("/");
-            res.addCookie(ca);
-            Cookie cb = new Cookie("mycookieB",URLEncoder.encode("jon can cook FAT cookies"));
-            cb.setPath("/");
-            res.addCookie(cb);
+            res.setContentType( "text/html" );
+            Cookie ca = new Cookie( "mycookieA", URLEncoder.encode( "jon can cook cookies" ) );
+            ca.setPath( "/" );
+            res.addCookie( ca );
+            Cookie cb = new Cookie( "mycookieB", URLEncoder.encode( "jon can cook FAT cookies" ) );
+            cb.setPath( "/" );
+            res.addCookie( cb );
             PrintWriter out = res.getWriter();
 
-            out.println ("<html><head><title>Foo</title></head><body bgcolor=white>");
-            out.println ("<form action=\"/noodle/servlet/Noodle?page=%2Fnoodle%2Fservlet%2FNoodleTest&true=mytrue\" method=\"POST\">");
-            out.println ("<input type=\"text\" name=\"but\" value=\"sometext\">");
-            out.println ("<input type=\"submit\" name=\"submit\" value=\"Red Pill\">");
-            out.println ("</body></html>");
+            out.println( "<html><head><title>Foo</title></head><body bgcolor=white>" );
+            out
+                .println( "<form action=\"/noodle/servlet/Noodle?page=%2Fnoodle%2Fservlet%2FNoodleTest&true=mytrue\" method=\"POST\">" );
+            out.println( "<input type=\"text\" name=\"but\" value=\"sometext\">" );
+            out.println( "<input type=\"submit\" name=\"submit\" value=\"Red Pill\">" );
+            out.println( "</body></html>" );
         }
-        catch (Exception e)
+        catch ( Exception e )
         {
-            System.out.println ("Error: " + e.toString());
+            System.out.println( "Error: " + e.toString() );
         }
     }
-    public void doPost (HttpServletRequest req, HttpServletResponse res)
+
+    public void doPost( HttpServletRequest req, HttpServletResponse res )
         throws IOException, ServletException
     {
         PrintWriter output = null;
         try
         {
             output = res.getWriter();
-            
+
             // things should still work if you comment this next line out
-            res.setContentType("text/html");
-            
+            res.setContentType( "text/html" );
+
             // playing with cookies
             Cookie[] cookies = req.getCookies();
-            if (cookies.length > 0)
+            if ( cookies.length > 0 )
             {
-                output.println ("WE Have a cookie!");
-                output.println ("<p>Cookie Value A: " + cookies[0].getValue());
-                output.println ("<p>Cookie Value B: " + cookies[1].getValue());
+                output.println( "WE Have a cookie!" );
+                output.println( "<p>Cookie Value A: " + cookies[0].getValue() );
+                output.println( "<p>Cookie Value B: " + cookies[1].getValue() );
             }
-            
-            ParameterParser pp = new ParameterParser(req);
-            output.println ("<p>post variable: " + pp.getString("but", "NOT THERE")); //output: sometext
-            output.println ("<p>get variable: " + pp.getString("true", "NOT TRUE")); //output: mytrue
+
+            ParameterParser pp = new ParameterParser( req );
+            output.println( "<p>post variable: " + pp.getString( "but", "NOT THERE" ) ); //output: sometext
+            output.println( "<p>get variable: " + pp.getString( "true", "NOT TRUE" ) ); //output: mytrue
         }
-        catch (Exception e)
+        catch ( Exception e )
         {
-            output.println ("<pre>" + Noodle.stackTrace(e) + "</pre>");
+            output.println( "<pre>" + Noodle.stackTrace( e ) + "</pre>" );
         }
     }
+
     public String getServletInfo()
     {
         return "NoodleTest Servlet";

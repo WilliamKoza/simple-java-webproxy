@@ -49,11 +49,13 @@ package org.tigris.noodle;
 public interface NoodleConstants
 {
     public static final String PROPERTIES = "properties";
+
     public static final String DEFAULT_PORT = "default.port";
+
     public static final String DEFAULT_HOST = "default.host";
 
-    /** 
-     * Default scheme, which you can't change right now. 
+    /**
+     * Default scheme, which you can't change right now.
      */
     public static final String SCHEME = "http";
 
@@ -62,16 +64,21 @@ public interface NoodleConstants
      */
     public static final String CONTENT_TYPE_HTML = "text/html";
 
-    /** 
+    /**
      * Used when no content type is set on the proxy return.
      */
     public static final String DEFAULT_CONTENT_TYPE = CONTENT_TYPE_HTML;
 
     public static final String PAGE_ATTRIBUTE = "org.tigris.noodle.page";
+
     public static final String PAGE_VAR = "page";
+
     public static final String POST = "POST";
+
     public static final String GET = "GET";
+
     public static final String PUT = "PUT";
+
     public static final String HEAD = "HEAD";
 
     /**
@@ -80,29 +87,26 @@ public interface NoodleConstants
     public static final String CONTENT_TYPE_HEADER_NAME = "Content-Type";
 
     /**
-     * This is used when dealing with charset headers; it is the modifier
-     * within the content-type header which specifies the charset.
+     * This is used when dealing with charset headers; it is the modifier within the content-type
+     * header which specifies the charset.
      */
     public static final String CONTENT_TYPE_CHARSET = "charset=";
 
     /**
-     * The default encoding to use when :
-     * (1) we have read bytes into unicode characters per response info
-     * (2) we are writing those unicode characters into bytes for output
-     * (3) we were able to guess an encoding based on the response http
-     * content type header or a meta HTML tag within the response
-     *
+     * The default encoding to use when : (1) we have read bytes into unicode characters per
+     * response info (2) we are writing those unicode characters into bytes for output (3) we were
+     * able to guess an encoding based on the response http content type header or a meta HTML tag
+     * within the response
+     * 
      * Generally, we want this to be UTF-8 to avoid losing data.
      */
     public static final String DEFAULT_OUTPUT_CHARSET = "UTF-8";
 
     /**
-     * The default encoding to use when :
-     * (1) we are reading bytes into unicode characters
-     * (2) we cannot determine the encoding for those bytes due to a lack
-     * of information in the response
-     *
+     * The default encoding to use when : (1) we are reading bytes into unicode characters (2) we
+     * cannot determine the encoding for those bytes due to a lack of information in the response
+     * 
      * When we use this, we won't use the DEFAULT_OUTPUT_CHARSET.
      */
     public static final String DEFAULT_CHARSET = "ISO-8859-1";
-}    
+}

@@ -179,10 +179,6 @@ public class Noodle
     public void doGet( HttpServletRequest req, HttpServletResponse res )
         throws IOException, ServletException
     {
-        if ( log.isDebugEnabled() )
-        {
-            log.debug( "doGet a" );
-        }
         OutputStream output = null;
         try
         {
